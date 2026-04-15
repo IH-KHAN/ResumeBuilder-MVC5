@@ -1,0 +1,225 @@
+﻿@model ResumeBuilder_1291763.Models.ViewModel.ApplicantViewModel
+
+@using (Html.BeginForm("Edit", "Resume", FormMethod.Post, new { id = "editForm", enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Applicant.ID)
+    @Html.HiddenFor(m => m.Applicant.UserID)
+    @Html.HiddenFor(m => m.Applicant.ProfilePhotoPath)
+
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Resume</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+
+        <h6 class="text-primary">Personal Details</h6>
+
+        <div class="row mb-4">
+            <div class="col-md-12 text-center">
+                <div class="position-relative d-inline-block">
+                    <img id="editImagePreview"
+                         src="@(string.IsNullOrEmpty(Model.Applicant.ProfilePhotoPath) ? "/Content/Images/default-user.png" : Url.Content(Model.Applicant.ProfilePhotoPath))"
+                         alt="Profile Photo"
+                         style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"
+                         onerror="this.src='https://via.placeholder.com/120?text=No+Image'" />
+                </div>
+                <div class="mt-2">
+                    <label for="editProfilePhoto" class="btn btn-sm btn-outline-primary">Change Photo</label>
+                    <input type="file" name="profilePhoto" id="editProfilePhoto" class="d-none" accept="image/*" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                @Html.LabelFor(m => m.Applicant.Name, new { @class = "form-label" })
+                @Html.EditorFor(m => m.Applicant.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Applicant.Name, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-6 mb-2">
+                @Html.LabelFor(m => m.Applicant.Email, new { @class = "form-label" })
+                @Html.EditorFor(m => m.Applicant.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(m => m.Applicant.Email, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-6 mb-2">
+                @Html.LabelFor(m => m.Applicant.DateOfBirth, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Applicant.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(m => m.Applicant.DateOfBirth, "", new { @class = "text-danger" })
+            </div>
+            <div class="col-md-3 mb-2 pt-4">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.Applicant.IsMarried, new { @class = "form-check-input" })
+                    @Html.LabelFor(m => m.Applicant.IsMarried, new { @class = "form-check-label" })
+                </div>
+            </div>
+            <div class="col-md-3 mb-2 pt-4">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.Applicant.HasExperience, new { @class = "form-check-input", id = "chkHasExperienceEdit" })
+                    @Html.LabelFor(m => m.Applicant.HasExperience, new { @class = "form-check-label" })
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <h6 class="text-primary">Education</h6>
+        <table class="table table-sm" id="tblEducationEdit">
+            <thead>
+                <tr>
+                    <th>Institution</th>
+                    <th>Degree</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Applicant.Educations.Count; i++)
+                {
+                    <tr class="edu-row">
+                        <td>
+                            @Html.DropDownListFor(m => m.Applicant.Educations[i].InstitutionID,
+                                new SelectList(Model.InstitutionOptions, "Value", "Text", Model.Applicant.Educations[i].InstitutionID),
+                                "Select", new { @class = "form-control form-control-sm" })
+                        </td>
+                        <td>
+                            @Html.DropDownListFor(m => m.Applicant.Educations[i].DegreeID,
+                                new SelectList(Model.DegreeOptions, "Value", "Text", Model.Applicant.Educations[i].DegreeID),
+                                "Select", new { @class = "form-control form-control-sm" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.Applicant.Educations[i].CompletionDate, "{0:yyyy-MM-dd}", new { @class = "form-control form-control-sm", type = "date" })
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm delete-row">X</button>
+                            @Html.HiddenFor(m => m.Applicant.Educations[i].ID)
+                            @Html.HiddenFor(m => m.Applicant.Educations[i].ApplicantID)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-success btn-sm" id="btnAddEducationEdit">Add Education</button>
+
+        <hr />
+
+        <div id="expSectionEdit" style="@(Model.Applicant.HasExperience ? "" : "display:none")">
+            <h6 class="text-primary">Experience</h6>
+            <table class="table table-sm" id="tblExperienceEdit">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Designation</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Applicant.Experiences.Count; i++)
+                    {
+                        <tr class="exp-row">
+                            <td>@Html.EditorFor(m => m.Applicant.Experiences[i].CompanyName, new { htmlAttributes = new { @class = "form-control form-control-sm" } })</td>
+                            <td>@Html.EditorFor(m => m.Applicant.Experiences[i].Designation, new { htmlAttributes = new { @class = "form-control form-control-sm" } })</td>
+                            <td>@Html.TextBoxFor(m => m.Applicant.Experiences[i].StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control form-control-sm", type = "date" })</td>
+                            <td>@Html.TextBoxFor(m => m.Applicant.Experiences[i].EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control form-control-sm", type = "date" })</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm delete-row">X</button>
+                                @Html.HiddenFor(m => m.Applicant.Experiences[i].ID)
+                                @Html.HiddenFor(m => m.Applicant.Experiences[i].ApplicantID)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-success btn-sm" id="btnAddExperienceEdit">Add Experience</button>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+}
+
+<script type="text/template" id="eduTemplate">
+    <tr class="edu-row">
+        <td>
+            @Html.DropDownList("Applicant.Educations[#].InstitutionID", new SelectList(Model.InstitutionOptions, "Value", "Text"), "Select", new { @class = "form-control form-control-sm" })
+        </td>
+        <td>
+            @Html.DropDownList("Applicant.Educations[#].DegreeID", new SelectList(Model.DegreeOptions, "Value", "Text"), "Select", new { @class = "form-control form-control-sm" })
+        </td>
+        <td>
+            <input type="date" name="Applicant.Educations[#].CompletionDate" class="form-control form-control-sm" />
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger btn-sm delete-row">X</button>
+            <input type="hidden" name="Applicant.Educations[#].ID" value="0" />
+            <input type="hidden" name="Applicant.Educations[#].ApplicantID" value="@Model.Applicant.ID" />
+        </td>
+    </tr>
+</script>
+
+<script>
+
+    $(document).on('change', '#editProfilePhoto', function (event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var output = document.getElementById('editImagePreview');
+            output.src = reader.result;
+        };
+        if (event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    });
+
+ 
+    $(document).off('change', '#chkHasExperienceEdit').on('change', '#chkHasExperienceEdit', function () {
+        if ($(this).is(':checked')) {
+            $('#expSectionEdit').slideDown();
+        } else {
+            $('#expSectionEdit').slideUp();
+        }
+    });
+
+    
+    $(document).off('click', '#btnAddEducationEdit').on('click', '#btnAddEducationEdit', function () {
+        var tableBody = $("#tblEducationEdit tbody");
+        var index = tableBody.find("tr").length;
+
+        var templateHtml = $("#eduTemplate").html();
+
+        
+        var newRowHtml = templateHtml.replace(/\[#\]/g, "[" + index + "]");
+
+        tableBody.append(newRowHtml);
+    });
+
+    
+    $(document).off('click', '#btnAddExperienceEdit').on('click', '#btnAddExperienceEdit', function () {
+        var tableBody = $("#tblExperienceEdit tbody");
+        var index = tableBody.find("tr").length;
+
+        var newRow = `
+            <tr class="exp-row">
+                <td><input class="form-control form-control-sm" name="Applicant.Experiences[${index}].CompanyName" /></td>
+                <td><input class="form-control form-control-sm" name="Applicant.Experiences[${index}].Designation" /></td>
+                <td><input class="form-control form-control-sm" type="date" name="Applicant.Experiences[${index}].StartDate" /></td>
+                <td><input class="form-control form-control-sm" type="date" name="Applicant.Experiences[${index}].EndDate" /></td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm delete-row">X</button>
+                    <input type="hidden" name="Applicant.Experiences[${index}].ID" value="0" />
+                    <input type="hidden" name="Applicant.Experiences[${index}].ApplicantID" value="@Model.Applicant.ID" />
+                </td>
+            </tr>`;
+
+        tableBody.append(newRow);
+    });
+
+    
+    $(document).on("click", ".delete-row", function () {
+        $(this).closest("tr").remove();
+    });
+</script>

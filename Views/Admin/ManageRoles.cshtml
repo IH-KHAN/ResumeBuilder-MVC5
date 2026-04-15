@@ -1,0 +1,37 @@
+﻿@model ResumeBuilder_1291763.Models.ViewModel.UserRoleViewModel
+
+@{
+    ViewBag.Title = "Manage User Role";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Manage Role</h4>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3"><strong>User:</strong> @Model.Email</p>
+
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.UserId)
+                        @Html.HiddenFor(m => m.Email)
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Select Role</label>
+                            @Html.DropDownListFor(m => m.SelectedRole, Model.RoleList, "Select a Role", new { @class = "form-select" })
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Update Role</button>
+                            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-outline-secondary" })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

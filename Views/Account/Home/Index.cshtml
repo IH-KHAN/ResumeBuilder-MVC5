@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="home-container">
+    <section class="hero-section text-center">
+        <div class="hero-content">
+            <h1 class="display-4">Build Your Perfect Resume</h1>
+            <p class="lead mb-4">
+                Create a professional, ATS-friendly resume in minutes.
+                Choose your template, fill in your details, and land your dream job.
+            </p>
+            <div class="hero-buttons">
+                <a href="@Url.Action("Create", "Resume")" class="btn btn-primary btn-lg me-2">Create Resume &raquo;</a>
+                <a href="#features" class="btn btn-outline-secondary btn-lg">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <div id="features" class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-lightning-charge" viewBox="0 0 16 16">
+                        <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z" />
+                    </svg>
+                </div>
+                <h3>Quick & Easy</h3>
+                <p>
+                    Stop struggling with Word formatting. Our smart builder handles the layout,
+                    separation of concerns, and styling while you focus on your skills.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-layers" viewBox="0 0 16 16">
+                        <path d="M8.235 1.559a.5.5 0 0 0-.47 0l-7.5 4a.5.5 0 0 0 0 .882L3.188 8 .264 9.559a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882L12.813 8l2.922-1.559a.5.5 0 0 0 0-.882l-7.5-4zm3.515 7.008L14.438 10 8 13.433 1.562 10 4.25 8.567l3.515 1.874a.5.5 0 0 0 .47 0l3.515-1.874zM8 9.433 1.562 6 8 2.567 14.438 6 8 9.433z" />
+                    </svg>
+                </div>
+                <h3>Modern Templates</h3>
+                <p>
+                    Choose from a variety of professionally designed degrees and institution layouts
+                    that are proven to catch recruiters' eyes.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
+                        <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.23-1.439-.61-2.837-.856C9.29 1.119 8.54 1 8 1s-1.29.119-2.662.59zM10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
+                    </svg>
+                </div>
+                <h3>Secure Data</h3>
+                <p>
+                    Your privacy matters. We use secure authentication to ensure your personal data
+                    and career history remain private and protected.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

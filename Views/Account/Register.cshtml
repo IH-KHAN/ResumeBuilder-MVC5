@@ -1,0 +1,92 @@
+﻿@model ResumeBuilder_1291763.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<style>
+    h2, h3, h4, .btn {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .register-card {
+        border: none;
+        border-radius: 12px;
+    }
+
+    .form-floating > label {
+        color: #6c757d;
+    }
+
+    .form-control:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 0.25rem rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card register-card shadow-lg mt-4 bg-white">
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold text-dark">Create Account</h3>
+                        <p class="text-muted small">Join us to build your professional resume</p>
+                    </div>
+
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger small py-2 mb-3">
+                                @Html.ValidationSummary(true, "", new { @class = "m-0" })
+                            </div>
+                        }
+
+                        <div class="form-floating mb-3">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "name@example.com", id = "floatingInputEmail" })
+                            @Html.LabelFor(m => m.Email, "Email Address")
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password", id = "floatingInputPass" })
+                            @Html.LabelFor(m => m.Password, "Password")
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm Password", id = "floatingInputConfirm" })
+                            @Html.LabelFor(m => m.ConfirmPassword, "Confirm Password")
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-lg">Register</button>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-white border-0 text-center pb-4 pt-0">
+                    <p class="small text-muted mb-0">
+                        Already have an account?
+                        @Html.ActionLink("Log in instead", "Login", null, new { @class = "text-dark fw-bold text-decoration-none" })
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

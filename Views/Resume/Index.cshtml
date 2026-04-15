@@ -1,0 +1,214 @@
+﻿@model IEnumerable<ResumeBuilder_1291763.Models.Applicant>
+
+@{
+    ViewBag.Title = "My Resumes";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">My Resumes</h2>
+        @Html.ActionLink("+ Create New Resume", "Create", null, new { @class = "btn btn-primary shadow-sm" })
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger shadow-sm">@TempData["Error"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="text-center p-5 bg-light rounded-3">
+            <h4 class="text-muted">No resumes found.</h4>
+            <p>Click the button above to build your first resume!</p>
+        </div>
+    }
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom-0 pt-3 pb-0">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                @if (!string.IsNullOrEmpty(item.ProfilePhotoPath))
+                                {
+                                    <img src="@Url.Content(item.ProfilePhotoPath)?v=@DateTime.Now.Ticks"
+                                         class="rounded-circle border border-2 border-white shadow-sm"
+                                         style="width: 80px; height: 80px; object-fit: cover;"
+                                         alt="@item.Name" />
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+                                         style="width: 80px; height: 80px; font-size: 2rem;">
+                                        @item.Name.Substring(0, 1)
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="flex-grow-1 ms-3">
+                                <h4 class="mb-0 fw-bold text-primary">@item.Name</h4>
+                                <p class="text-muted mb-0 small">
+                                    <i class="bi bi-envelope"></i> @item.Email |
+                                    <i class="bi bi-calendar"></i> Born: @item.DateOfBirth.ToString("MMM dd, yyyy")
+                                </p>
+                                <span class="badge @(item.IsMarried ? "bg-info" : "bg-success")">
+                                    @(item.IsMarried ? "Married" : "Single")
+                                </span>
+                            </div>
+
+                            <div class="ms-auto">
+                                <button class="btn btn-outline-primary btn-sm me-1 edit-btn" data-id="@item.ID">
+                                    Edit
+                                </button>
+                                <a href="@Url.Action("Delete", new { id = item.ID })"
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('Are you sure?');">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6 border-end">
+                                <h6 class="text-uppercase text-secondary fw-bold small mb-3">Education</h6>
+                                @if (item.Educations != null && item.Educations.Any())
+                                {
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var edu in item.Educations.OrderByDescending(e=>e.CompletionDate))
+                                        {
+                                            <li class="list-group-item px-0 py-2 border-0">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong class="d-block text-dark">@edu.Degree.Name</strong>
+                                                        <small class="text-muted">@edu.Institution.Name</small>
+                                                    </div>
+                                                    <span class="badge bg-light text-dark align-self-start border">
+                                                        @edu.CompletionDate.ToString("yyyy")
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic small">No education listed.</span>
+                                }
+                            </div>
+
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-secondary fw-bold small mb-3">Experience</h6>
+                                @if (item.HasExperience && item.Experiences != null && item.Experiences.Any())
+                                {
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var exp in item.Experiences.OrderByDescending(e=>e.StartDate))
+                                        {
+                                            <li class="list-group-item px-0 py-2 border-0">
+                                                <div class="d-flex justify-content-between">
+                                                    <div>
+                                                        <strong class="d-block text-dark">@exp.Designation</strong>
+                                                        <small class="text-primary">@exp.CompanyName</small>
+                                                    </div>
+                                                    <small class="text-muted text-end" style="font-size: 0.8rem;">
+                                                        @exp.StartDate.ToString("MMM yy") -
+                                                        @(exp.EndDate.HasValue ? exp.EndDate.Value.ToString("MMM yy") : "Present")
+                                                    </small>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic small">Fresher / No experience listed.</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modalContent">
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // OPEN MODAL
+            $(".edit-btn").click(function () {
+                var id = $(this).data("id");
+                $.get("/Resume/Edit/" + id, function (data) {
+                    $("#modalContent").html(data);
+                    $("#editModal").modal("show");
+                });
+            });
+
+           
+            $(document).on("change", "#chkHasExperienceEdit", function () {
+                if ($(this).is(":checked")) {
+                    $("#expSectionEdit").slideDown();
+                } else {
+                    $("#expSectionEdit").slideUp();
+                }
+            });
+
+            
+            $(document).on("click", ".delete-row", function () {
+                $(this).closest("tr").remove();
+            });
+
+            
+            $(document).on("click", "#btnAddEducationEdit", function () {
+                var tableBody = $("#tblEducationEdit tbody");
+                var index = tableBody.find("tr").length;
+                var firstRow = tableBody.find("tr:first");
+
+                if (firstRow.length > 0) {
+                    var newRow = firstRow.clone();
+                    newRow.find("select, input").each(function () {
+                        var name = $(this).attr("name");
+                        if (name) {
+                            var newName = name.replace(/\[\d+\]/, "[" + index + "]");
+                            $(this).attr("name", newName);
+                            $(this).val("");
+                        }
+                    });
+                    newRow.find("input[type='hidden']").val("0");
+                    tableBody.append(newRow);
+                }
+            });
+
+            
+            $(document).on("click", "#btnAddExperienceEdit", function () {
+                var tableBody = $("#tblExperienceEdit tbody");
+                var index = tableBody.find("tr").length;
+                var firstRow = tableBody.find("tr:first");
+
+                if (firstRow.length > 0) {
+                    var newRow = firstRow.clone();
+                    newRow.find("input").each(function () {
+                        var name = $(this).attr("name");
+                        if (name) {
+                            var newName = name.replace(/\[\d+\]/, "[" + index + "]");
+                            $(this).attr("name", newName);
+                            $(this).val("");
+                        }
+                    });
+                    newRow.find("input[type='hidden']").val("0");
+                    tableBody.append(newRow);
+                }
+            });
+        });
+    </script>
+}

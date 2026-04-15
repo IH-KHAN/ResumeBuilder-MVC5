@@ -1,0 +1,221 @@
+﻿@model ResumeBuilder_1291763.Models.ViewModel.ApplicantViewModel
+@{ ViewBag.Title = "Create Resume"; }
+
+<div class="card-container">
+    <h2 class="mb-4">Create Your Resume</h2>
+
+    @using (Html.BeginForm("Create", "Resume", FormMethod.Post, new { enctype = "multipart/form-data", id = "resumeForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+
+            <h4>Personal Details</h4>
+            <hr />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label mb-2">Full Name</label>
+                        @Html.EditorFor(m => m.Applicant.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label mb-2">Email</label>
+                        @Html.EditorFor(m => m.Applicant.Email, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label mb-2">Date of Birth</label>
+                        @Html.TextBoxFor(m => m.Applicant.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-group mb-2">
+                            <div class="form-check">
+                                @Html.CheckBoxFor(m => m.Applicant.IsMarried, new { @class = "form-check-input", id = "isMarried" })
+                                <label class="form-check-label" for="isMarried">
+                                    <strong>Married</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label mb-2">Profile Photo</label>
+                        <input type="file" name="profilePhoto" id="profilePhoto" class="form-control" accept="image/*" />
+                        <div class="mt-3">
+                            <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-4">Education</h4>
+            <hr />
+            <table class="table table-bordered" id="eduTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Institution</th>
+                        <th>Degree</th>
+                        <th>Completion Date</th>
+                        <th style="width: 50px;"><button type="button" id="addEdu" class="btn btn-sm btn-success">+</button></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Applicant.Educations.Count; i++)
+                    {
+                        <tr class="edu-row">
+                            <td>@Html.DropDownListFor(m => m.Applicant.Educations[i].InstitutionID, Model.InstitutionOptions, "Select", new { @class = "form-control" })</td>
+                            <td>@Html.DropDownListFor(m => m.Applicant.Educations[i].DegreeID, Model.DegreeOptions, "Select", new { @class = "form-control" })</td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Applicant.Educations[i].CompletionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </td>
+                            <td><button type="button" class="btn btn-sm btn-danger remove-row">x</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="form-group mt-3">
+                <div class="checkbox">
+                    <label>
+                        @Html.CheckBoxFor(m => m.Applicant.HasExperience, new { id = "chkExperience" })
+                        <strong>I have work experience</strong>
+                    </label>
+                </div>
+            </div>
+
+            <div id="experienceSection" class="mt-3" style="display:none; background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <h4>Work Experience</h4>
+                <table class="table table-borderless align-middle" id="expTable">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Designation</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th class="text-center">Current</th>
+                            <th style="width: 50px;"><button type="button" id="addExp" class="btn btn-sm btn-success">+</button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Applicant.Experiences.Count; i++)
+                        {
+                            <tr class="exp-row">
+                                <td>@Html.EditorFor(m => m.Applicant.Experiences[i].CompanyName, new { htmlAttributes = new { @class = "form-control" } })</td>
+                                <td>@Html.EditorFor(m => m.Applicant.Experiences[i].Designation, new { htmlAttributes = new { @class = "form-control" } })</td>
+                                <td>@Html.TextBoxFor(m => m.Applicant.Experiences[i].StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })</td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.Applicant.Experiences[i].EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control end-date-input", type = "date" })
+                                </td>
+                                <td class="text-center">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input type="checkbox" class="form-check-input chk-current-work" style="cursor: pointer;" />
+                                    </div>
+                                </td>
+                                <td><button type="button" class="btn btn-sm btn-danger remove-row">x</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Create Resume" class="btn btn-primary btn-lg" />
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // --- IMAGE PREVIEW ---
+            $("#profilePhoto").change(function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#imagePreview').attr('src', e.target.result).show();
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+           
+            function toggleExperience() {
+                if ($('#chkExperience').is(':checked')) {
+                    $('#experienceSection').slideDown();
+                } else {
+                    $('#experienceSection').slideUp();
+                }
+            }
+            toggleExperience();
+            $('#chkExperience').change(toggleExperience);
+
+           
+            $(document).on('change', '.chk-current-work', function () {
+                var row = $(this).closest('tr');
+                var endDateInput = row.find('.end-date-input');
+
+                if ($(this).is(':checked')) {
+                    endDateInput.val('');           // Clear value
+                    endDateInput.prop('disabled', true); // Disable input
+                    endDateInput.attr('placeholder', 'Present');
+                } else {
+                    endDateInput.prop('disabled', false); // Enable input
+                    endDateInput.attr('placeholder', '');
+                }
+            });
+
+            
+            $("#addEdu").click(function () {
+                var rowCount = $('#eduTable tbody tr').length;
+                var newRow = $('.edu-row').first().clone();
+                resetRowIndices(newRow, rowCount);
+                $('#eduTable tbody').append(newRow);
+            });
+
+            
+            $("#addExp").click(function () {
+                var rowCount = $('#expTable tbody tr').length;
+                var newRow = $('.exp-row').first().clone();
+
+              
+                newRow.find('.chk-current-work').prop('checked', false);
+                newRow.find('.end-date-input').prop('disabled', false);
+
+                resetRowIndices(newRow, rowCount);
+                $('#expTable tbody').append(newRow);
+            });
+
+            
+            function resetRowIndices(row, index) {
+                row.find('select, input').each(function () {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/\[\d+\]/, '[' + index + ']');
+                        $(this).attr('name', name);
+
+                        
+                        if ($(this).attr('type') !== 'checkbox' && $(this).attr('type') !== 'hidden') {
+                            $(this).val('');
+                        }
+                    }
+                });
+            }
+
+            
+            $(document).on('click', '.remove-row', function () {
+                if ($(this).closest('table').find('tbody tr').length > 1) {
+                    $(this).closest('tr').remove();
+                }
+            });
+        });
+    </script>
+}
